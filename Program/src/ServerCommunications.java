@@ -5,7 +5,6 @@ import java.util.*;
 
 public class ServerCommunications implements Runnable {
     private LinkedList<Message> messageInbox = new LinkedList<>();
-    private LinkedList<Message> messageOutbox = new LinkedList<>();
 
     private ServerSocket serverSocket = null;
     private LinkedList<ServerCommunicationRunnable> runnables = new LinkedList<>();
@@ -16,7 +15,7 @@ public class ServerCommunications implements Runnable {
     }
 
     public void run() {
-
+        startServer();
         while (!stopped) {
             try {
                 Socket socket = this.serverSocket.accept();
@@ -30,7 +29,7 @@ public class ServerCommunications implements Runnable {
         }
     }
 
-    private synchronized void start() {
+    private synchronized void startServer() {
         try {
             this.stopped = false;
             this.serverSocket = new ServerSocket(8080);
@@ -49,7 +48,7 @@ public class ServerCommunications implements Runnable {
         }
     }
 
-    private void appendInbox(Message m) {
+    void appendInbox(Message m) {
         messageInbox.offer(m);
     }
 
@@ -61,11 +60,28 @@ public class ServerCommunications implements Runnable {
         return messageInbox.size();
     }
 
-    void sendMessage(Message m) {
-        messageOutbox.offer(m);
+    public void sendMessage(Message m) {
+        sendMessage(m.id, m.message);
     }
 
     public void sendMessage(int id, char message) {
-        sendMessage(new Message(id, message));
+        Iterator<ServerCommunicationRunnable> iterator = runnables.listIterator();
+        boolean foundID = false;
+        while (iterator.hasNext()) {
+            ServerCommunicationRunnable runnable = iterator.next();
+            if (id == runnable.getId()) {
+                runnable.push(message);
+                foundID = true;
+                break;
+            }
+        }
+    }
+
+    public void broadcastMessage(char message) {
+        Iterator<ServerCommunicationRunnable> iterator = runnables.listIterator();
+        while (iterator.hasNext()) {
+            ServerCommunicationRunnable runnable = iterator.next();
+            runnable.push(message);
+        }
     }
 }
