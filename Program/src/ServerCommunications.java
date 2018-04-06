@@ -1,6 +1,5 @@
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.io.*;
+import java.net.*;
 import java.util.*;
 
 public class ServerCommunications implements Runnable {
@@ -24,7 +23,7 @@ public class ServerCommunications implements Runnable {
                 new Thread(runnable).start();
             } catch (IOException e) {
                 if (stopped) break;
-                throw new RuntimeException("Error accepting client connection", e);
+                throw new RuntimeException("Error Accepting Client Connection", e);
             }
         }
     }
