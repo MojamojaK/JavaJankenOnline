@@ -1,6 +1,5 @@
 public class GameManager {
     public static void main(String[] args) {
-
         ServerCommunications comm = new ServerCommunications();
         while (true) {
             if (comm.inboxSize() > 0) {
