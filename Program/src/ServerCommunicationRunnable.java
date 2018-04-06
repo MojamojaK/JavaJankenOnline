@@ -11,6 +11,8 @@ public class ServerCommunicationRunnable implements Runnable {
     private static int next_id = 0;
     private final int id;
 
+    private boolean stopped = true;
+
     private BufferedReader in;
     private PrintWriter out;
 
@@ -21,11 +23,12 @@ public class ServerCommunicationRunnable implements Runnable {
     }
 
     public void run() {
+        this.stopped = false;
         try {
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             try {
                 out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())));
-                while (true) {
+                while (!this.stopped) {
                     if (outbox.size() > 0) {
                         char message = outbox.poll();
                         out.print(message);
@@ -35,12 +38,18 @@ public class ServerCommunicationRunnable implements Runnable {
                     }
                 }
             } catch (IOException e) {
-                throw new RuntimeException("OUT Error", e);
+                throw new RuntimeException("Print Writer Error on thread #" + Thread.currentThread(), e);
             } finally {
                 in.close();
             }
         } catch (IOException e) {
-            throw new RuntimeException("IN Error", e);
+            throw new RuntimeException("Buffered Reader Error on thread #" + Thread.currentThread(), e);
+        } finally {
+            try {
+                socket.close();
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to Close Socket on thread #"+ Thread.currentThread(), e);
+            }
         }
     }
 
