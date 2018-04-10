@@ -12,7 +12,7 @@ public class Client{
 	}
 	System.out.println("addr = " +addr);
 	Socket socket=
-	    new Socket(addr, JabberServer.PORT);
+	    new Socket(addr, 8080);
 	try{
 	    System.out.println("socket = " + socket);
 	    BufferedReader in =
