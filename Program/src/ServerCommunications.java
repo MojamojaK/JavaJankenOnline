@@ -63,7 +63,7 @@ public class ServerCommunications implements Runnable {
         sendMessage(m.id, m.message);
     }
 
-    public void sendMessage(int id, char message) {
+    public boolean sendMessage(int id, char message) {
         Iterator<ServerCommunicationRunnable> iterator = runnables.listIterator();
         boolean foundID = false;
         while (iterator.hasNext()) {
@@ -74,6 +74,7 @@ public class ServerCommunications implements Runnable {
                 break;
             }
         }
+        return foundID;
     }
 
     public void broadcastMessage(char message) {
