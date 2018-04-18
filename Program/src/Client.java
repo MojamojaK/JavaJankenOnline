@@ -13,21 +13,21 @@ public class Client{
 			if (comm.inboxSize() > 0) {
 				char message = comm.getMessage();
 				if(message == 'l') {
-          System.out.println("You lose");      //loseが送られてきたら終わり
+                                  System.out.println("You lose");      //loseが送られてきたら終わり
 				}else if(message == 'w'){
-          System.out.println("You win");
-        }else if(message == 'd'){
-          System.out.println("Draw");
-        }else if(message == 'c'){
-          System.out.println("Game Over. You're the winner!");
-          break;
-        }else if(message == 'f'){
-          System.out.println("Game Over. You lose!");
-          break;
-        }
-      }
+                                  System.out.println("You win");
+                                }else if(message == 'd'){
+                                  System.out.println("Draw");
+                                }else if(message == 'c'){
+                                  System.out.println("Game Over. You're the winner!");
+                                  break;
+                                }else if(message == 'f'){
+                                  System.out.println("Game Over. You lose!");
+                                  break;
+                                }
+			}
 		}
 		comm.sendMessage('e');
 		comm.close();
-	}
+  }
 }
