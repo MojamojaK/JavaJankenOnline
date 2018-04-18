@@ -65,7 +65,13 @@ public class GameManager {
                 //ある人は10点を取った場合　終わり
                 for (int j = 0; j < num; j++) {
                     if (player[j] == 10) {
-                        System.out.println("Game Over. Player" + (j + 1) + "is winner!");
+                        for(int k=0; k<num; k++){
+                          if(j==k){
+                            comm.sendMessage(k + 1, 'c');
+                          }else{
+                            comm.sendMessage(k + 1, 'f');
+                          }
+                        }
                         break;
                     }
                 }
