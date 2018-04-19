@@ -62,11 +62,11 @@ public class GameManager {
                         comm.sendMessage(j + 1, 'd'); // draw
                     }
                 }
-                //ある人は10点を取った場合　終わり
+                //ある人は3点を取った場合　終わり
                 for (int j = 0; j < num; j++) {
-                    if (player[j] == 10) {
+                    if (player[j] == 3) {
                         for(int k=0; k<num; k++){
-                          if(player[k] == 10){
+                          if(player[k] == 3){
                             comm.sendMessage(k + 1, 'c');
                           }else{
                             comm.sendMessage(k + 1, 'f');
