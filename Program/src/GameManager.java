@@ -32,34 +32,31 @@ public class GameManager {
                         else p += 1;
                     }
 
-                    if (g == 0 || c == 0 || p == 0) {
-                        if (g == 0) {
-                            for (int j = 0; j < num; j++) {
-                                if (janken[j] == 'c') {
-                                    comm.sendMessage(j + 1, 'w'); // messageの型はcharです win
-                                    player[j] += 1;
-                                } else comm.sendMessage(j + 1, 'l'); // lose
-                            }
-                        } else if (c == 0) {
-                            for (int j = 0; j < num; j++) {
-                                if (janken[j] == 'p') {
-                                    comm.sendMessage(j + 1, 'w'); // win
-                                    player[j] += 1;
-                                } else comm.sendMessage(j + 1, 'l'); // lose
-                            }
-                        } else if (p == 0) {
-                            for (int j = 0; j < num; j++) {
-                                if (janken[j] == 'g') {
-                                    comm.sendMessage(j + 1, 'w'); // win
-                                    player[j] += 1;
-                                } else comm.sendMessage(j + 1, 'l'); // lose
-                            }
-                        }
+                    //引き分け
+                    if ((g > 0 && c > 0 && p > 0) || g == num || c == num || p == num) {
+                        for(int j = 0; j < num; j++) comm.sendMessage(j + 1, 'd');//draw
                     }
-
-                    //平局
-                    else for (int j = 0; j < num; j++) {
-                        comm.sendMessage(j + 1, 'd'); // draw
+                    else if (g == 0) {
+                        for (int j = 0; j < num; j++) {
+                            if (janken[j] == 'c') {
+                                comm.sendMessage(j + 1, 'w'); // messageの型はcharです win
+                                player[j] += 1;
+                            } else comm.sendMessage(j + 1, 'l'); // lose
+                        }
+                    } else if (c == 0) {
+                        for (int j = 0; j < num; j++) {
+                            if (janken[j] == 'p') {
+                                comm.sendMessage(j + 1, 'w'); // win
+                                player[j] += 1;
+                            } else comm.sendMessage(j + 1, 'l'); // lose
+                        }
+                    } else if (p == 0) {
+                        for (int j = 0; j < num; j++) {
+                            if (janken[j] == 'g') {
+                                comm.sendMessage(j + 1, 'w'); // win
+                                player[j] += 1;
+                            } else comm.sendMessage(j + 1, 'l'); // lose
+                        }
                     }
                 }
                 //ある人は3点を取った場合　終わり
