@@ -66,7 +66,7 @@ public class GameManager {
                 for (int j = 0; j < num; j++) {
                     if (player[j] == 10) {
                         for(int k=0; k<num; k++){
-                          if(j==k){
+                          if(player[k] == 10){
                             comm.sendMessage(k + 1, 'c');
                           }else{
                             comm.sendMessage(k + 1, 'f');
