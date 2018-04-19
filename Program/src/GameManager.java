@@ -35,8 +35,7 @@ public class GameManager {
                     //引き分け
                     if ((g > 0 && c > 0 && p > 0) || g == num || c == num || p == num) {
                         for(int j = 0; j < num; j++) comm.sendMessage(j + 1, 'd');//draw
-                    }
-                    else if (g == 0) {
+                    } else if (g == 0) {
                         for (int j = 0; j < num; j++) {
                             if (janken[j] == 'c') {
                                 comm.sendMessage(j + 1, 'w'); // messageの型はcharです win
@@ -59,6 +58,7 @@ public class GameManager {
                         }
                     }
                 }
+                
                 //ある人は3点を取った場合　終わり
                 for (int j = 0; j < num; j++) {
                     if (player[j] == 3) {
