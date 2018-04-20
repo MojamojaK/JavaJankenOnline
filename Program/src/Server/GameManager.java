@@ -20,6 +20,12 @@ public class GameManager {
     private void lobby() {
         System.out.println("Entered Lobby");
         while (!game_running) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println("Inbox Size = " + comm.inboxSize());
             if (comm.inboxSize() > 0) {                     // メッセージが届いたとき
                 Message m = comm.getMessage();
                 if (m.message == Commands.Connect) {            // あるプレイヤーから 'C'が届く（接続が完了した）
@@ -35,12 +41,6 @@ public class GameManager {
                 } else if (m.message != Commands.Error){        // その他のメッセージを貰ったとき(エラー以外)
                     comm.sendMessage(m.id, Commands.Error);         // コマンドの送信者にエラーメッセージを送る
                 }
-            }
-            Scanner sc = new Scanner(System.in);
-            if (sc.hasNext()) {
-                sc.next();
-                System.out.println("F");
-                comm.broadcastMessage('F');
             }
         }
     }

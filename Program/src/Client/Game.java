@@ -49,8 +49,8 @@ public class Game {
         System.out.println("Minimum Required Players: 2");
         while(!game_start) {
             if (comm.inboxSize() > 0) {
-                System.out.println("y");
                 char message = comm.getMessage();
+                System.out.println(message);
                 if (message == Commands.Start) {
                     System.out.println("Starting Game");
                     game_start = true;

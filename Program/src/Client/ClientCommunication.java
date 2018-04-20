@@ -25,7 +25,7 @@ public class ClientCommunication implements Runnable{
             socket = new Socket(addr, Configuration.PORT);
             System.out.println("Client Communication: ADDR: " + addr + ":" + Configuration.PORT);
             this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            this.out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())));
+            this.out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
             stopped = false;
             new Thread(this).start();
         } catch (IOException e) {
@@ -36,8 +36,11 @@ public class ClientCommunication implements Runnable{
     public void run() {
         while (!stopped) {
             try {
-                if (in.ready()) {
-                    appendInbox((char)in.read());
+                int d = in.read();
+                if (d == -1) {
+                    close();
+                } else {
+                    appendInbox((char)d);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -46,6 +49,7 @@ public class ClientCommunication implements Runnable{
     }
 
     void close() {
+        System.out.println("Server Connection Closed");
         stopped = true;
         try {
             socket.close();
