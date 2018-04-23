@@ -25,12 +25,12 @@ public class GameManager {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            System.out.println("Inbox Size = " + comm.inboxSize());
+            //System.out.println("Inbox Size = " + comm.inboxSize());
             if (comm.inboxSize() > 0) {                     // メッセージが届いたとき
                 Message m = comm.getMessage();
                 if (m.message == Commands.Connect) {            // あるプレイヤーから 'C'が届く（接続が完了した）
                     players.putIfAbsent(m.id, new Player(m.id));    // 該当プレイヤーの追加
-                    System.out.println("Established Connection with Player #" + m.id);
+                    System.out.println("Established Connection with Client #" + m.id);
                 }
                 else if (m.message == Commands.Start) {         // あるプレイヤーから 'S'が届く（開始の合図）
                     if (player_num() > 1) {                         // プレイヤーの数が「有効」なとき
@@ -38,6 +38,9 @@ public class GameManager {
                     } else {                                        // プレイヤーの数が「無効」なとき
                         comm.sendMessage(m.id, Commands.Error);         // コマンドの送信者にエラーメッセージを送る
                     }
+                } else if (m.message == Commands.Disconnect) {
+                    System.out.println("Client #" + m.id + " disconnected");
+                    players.remove(m.id);
                 } else if (m.message != Commands.Error){        // その他のメッセージを貰ったとき(エラー以外)
                     comm.sendMessage(m.id, Commands.Error);         // コマンドの送信者にエラーメッセージを送る
                 }
@@ -49,9 +52,7 @@ public class GameManager {
         System.out.println("Starting Game");
         comm.broadcastMessage(Commands.Start); // 全プレイヤーに開始の合図を送る
         while (game_running) {
-            System.out.println("Starting Round #" + Round.count());
-            Round round = new Round(comm, players);       // 現時点でのプレイヤーでラウンド設定
-            round.startLoop();                      // ラウンド開始
+            Round round = new Round(comm, players);       // 現時点でのプレイヤーでラウンド開始
             HashMap<Integer, Player> champions = getChampions();
             if (champions.size() > 0) {
                 for (Map.Entry<Integer, Player> e: champions.entrySet()) {
@@ -65,7 +66,6 @@ public class GameManager {
     }
 
     private void close() {
-        System.out.println("Closing Game");
         comm.stop();
         System.out.println("Closed Game");
     }

@@ -1,13 +1,13 @@
 package Server;
 
+import Utility.Commands;
+
 class Player {
 
     private int id = 0;
     private int score = 0;
 
-    private final static char EmptyHand = 'e';
-
-    private char hand = EmptyHand;
+    private char hand = Commands.EmptyHand;
 
     Player (int id) {
         this.id = id;
@@ -31,8 +31,9 @@ class Player {
     }
 
     boolean setHand (char c) {
-        if (hand == EmptyHand) {
+        if (hand == Commands.EmptyHand) {
             hand = c;
+            System.out.println("Player " + id + " set hand to :" + hand);
             return true;
         }
         return false;
@@ -43,6 +44,6 @@ class Player {
     }
 
     void resetHand () {
-        setHand(EmptyHand);
+        hand = Commands.EmptyHand;
     }
 }

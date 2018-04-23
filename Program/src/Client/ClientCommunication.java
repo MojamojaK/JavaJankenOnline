@@ -13,7 +13,7 @@ public class ClientCommunication implements Runnable{
     private Socket socket;
 
     private BufferedReader in;
-    private PrintWriter out;
+    private BufferedWriter out;
 
     private LinkedList<Character> inbox = new LinkedList<>();
 
@@ -25,7 +25,7 @@ public class ClientCommunication implements Runnable{
             socket = new Socket(addr, Configuration.PORT);
             System.out.println("Client Communication: ADDR: " + addr + ":" + Configuration.PORT);
             this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            this.out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
+            this.out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             stopped = false;
             new Thread(this).start();
         } catch (IOException e) {
@@ -43,18 +43,21 @@ public class ClientCommunication implements Runnable{
                     appendInbox((char)d);
                 }
             } catch (IOException e) {
+                close();
                 e.printStackTrace();
             }
         }
     }
 
     void close() {
-        System.out.println("Server Connection Closed");
-        stopped = true;
-        try {
-            socket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (!stopped) {
+            stopped = true;
+            System.out.println("Server Connection Closed");
+            try {
+                socket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -66,12 +69,21 @@ public class ClientCommunication implements Runnable{
         return inbox.size();
     }
 
-    char getMessage() {
-        return inbox.poll();
+    synchronized char getMessage() {
+        return inbox.pop();
     }
 
     synchronized void sendMessage(char message) {
-        System.out.println("Sending: \'" + message + "\'");
-        out.print(message);
+        //System.out.println("Sending: \'" + message + "\'");
+        try {
+            out.write((int) message);
+            out.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    boolean closed() {
+        return stopped;
     }
 }

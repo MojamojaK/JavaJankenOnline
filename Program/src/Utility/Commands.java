@@ -10,9 +10,10 @@ public class Commands {
     public final static char Finish = 'F';
 
     // Game Commands
-    public final static char Rock = 'r';
+    public final static char Rock = 'g';
     public final static char Paper = 'p';
-    public final static char Scissors = 's';
+    public final static char Scissors = 'c';
+    public final static char EmptyHand = 'e';
 
     public final static char Win = 'w';
     public final static char Lose = 'l';

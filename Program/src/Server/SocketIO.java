@@ -1,5 +1,6 @@
 package Server;
 
+import Utility.Commands;
 import Utility.Message;
 
 import java.io.*;
@@ -14,7 +15,7 @@ public class SocketIO implements Runnable{
     Socket socket;
 
     BufferedReader in;
-    PrintWriter out;
+    BufferedWriter out;
 
     private boolean opened = true;
 
@@ -24,7 +25,7 @@ public class SocketIO implements Runnable{
         this.socket = socket;
         try {
             this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            this.out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
+            this.out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             new Thread(this).start();
         } catch (IOException e) {
             e.printStackTrace();
@@ -34,12 +35,13 @@ public class SocketIO implements Runnable{
     public void run() {
         while (opened) {
             try {
-                System.out.println("Start Reading #" + id + "...");
+                //System.out.println("Start Reading #" + id + "...");
                 int d = in.read();
-                System.out.println("Done  Reading #" + id + "...");
+                //System.out.println("Done  Reading #" + id + "...");
                 if (d == -1) {
                     close();
                 } else {
+                    System.out.println("#" + id + " -> Server: " + ((char)d));
                     comm.appendInbox(new Message(id, (char) d));
                 }
             } catch (IOException e) {
@@ -54,12 +56,25 @@ public class SocketIO implements Runnable{
     }
 
     void push(char message) {
-        System.out.println("Server #" + id + " wrote: " + message);
-        out.print(message);
+        System.out.println("Server -> #" + id + ": " + message);
+        try {
+            out.write((int) message);
+            out.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     void close() {
-        System.out.println("#" + id + " Closed");
+        System.out.println("Client #" + id + " Closed Connection");
+        try {
+            comm.cs_rwl.writeLock();
+            comm.clientSockets.remove(id);
+            comm.cs_rwl.writeUnlock();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        comm.appendInbox(new Message(id, Commands.Disconnect));
         try {
             if (opened) {
                 in.close();

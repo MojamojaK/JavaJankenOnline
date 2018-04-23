@@ -10,7 +10,7 @@ import Utility.ReadWriteLock;
 
 public class ServerCommunications implements Runnable {
     private LinkedList<Message> messageInbox = new LinkedList<>();
-    ReadWriteLock mi_rwl = new ReadWriteLock();
+    private ReadWriteLock mi_rwl = new ReadWriteLock();
 
     private ServerSocket serverSocket = null;
     HashMap<Integer, SocketIO> clientSockets = new HashMap<>();
@@ -43,7 +43,7 @@ public class ServerCommunications implements Runnable {
         }
     }
 
-    private synchronized void startServer() {
+    private void startServer() {
         try {
             this.stopped = false;
             this.serverSocket = new ServerSocket(Configuration.PORT);
@@ -54,7 +54,7 @@ public class ServerCommunications implements Runnable {
         }
     }
 
-    synchronized void stop() {
+    void stop() {
         this.stopped = true;
         try {
             try {
@@ -72,7 +72,7 @@ public class ServerCommunications implements Runnable {
         }
     }
 
-    synchronized void appendInbox(Message m) {
+    void appendInbox(Message m) {
         try {
             mi_rwl.writeLock();
             messageInbox.offer(m);
@@ -82,19 +82,37 @@ public class ServerCommunications implements Runnable {
         }
     }
 
-    synchronized Message getMessage() {
-        return messageInbox.poll();
+    Message getMessage() {
+        Message message = Message.getNULL();
+        try {
+            mi_rwl.readLock();
+            message = messageInbox.pop();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            mi_rwl.readUnlock();
+        }
+        return message;
     }
 
-    synchronized int inboxSize() {
-        return messageInbox.size();
+    int inboxSize() {
+        int val = 0;
+        try {
+            mi_rwl.readLock();
+            val = messageInbox.size();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            mi_rwl.readUnlock();
+        }
+        return val;
     }
 
-    synchronized void sendMessage(Message m) {
+    void sendMessage(Message m) {
         sendMessage(m.id, m.message);
     }
 
-    synchronized void sendMessage(int id, char message) {
+    void sendMessage(int id, char message) {
         try {
             cs_rwl.readLock();
             for (Map.Entry<Integer, SocketIO> entry : clientSockets.entrySet()) {
@@ -108,7 +126,7 @@ public class ServerCommunications implements Runnable {
         }
     }
 
-    synchronized void broadcastMessage(char message) {
+    void broadcastMessage(char message) {
         try {
             cs_rwl.readLock();
             for (Map.Entry<Integer, SocketIO> entry: clientSockets.entrySet()) {
@@ -120,7 +138,7 @@ public class ServerCommunications implements Runnable {
         }
     }
 
-    synchronized void broadcastMessage(HashMap<Integer, Player> players, char message) {
+    void broadcastMessage(HashMap<Integer, Player> players, char message) {
         try {
             cs_rwl.readLock();
             Set<Integer> idSet = players.keySet();
