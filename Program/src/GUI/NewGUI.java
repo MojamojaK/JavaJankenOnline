@@ -24,6 +24,7 @@ public class NewGUI extends JFrame implements ActionListener {
     JButton button1;
     JButton button2;
     JButton button3;
+    JButton button4;
 
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == button1) {
@@ -61,14 +62,18 @@ public class NewGUI extends JFrame implements ActionListener {
             button2 = new JButton("scissors", icon2);
             ImageIcon icon3 = new ImageIcon("images/paper.jpg");
             button3 = new JButton("paper", icon3);
+            button4 = new JButton("Start");
 
             button1.addActionListener(this);
             button2.addActionListener(this);
             button3.addActionListener(this);
+            button4.addActionListener(this);
 
             p.add(button1);
             p.add(button2);
             p.add(button3);
+            p.add(button4);
+
 
             Container contentPane = getContentPane();
             contentPane.add(p, BorderLayout.CENTER);
