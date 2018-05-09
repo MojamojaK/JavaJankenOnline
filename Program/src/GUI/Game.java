@@ -32,6 +32,7 @@ public class Game {
         System.out.println("Press \"S\" to start game");
         System.out.println("Minimum Required Players: 2");
         while(!game_start && !comm.closed()) {
+            scanner.setVisible(true);
             if (comm.inboxSize() > 0) {
                 char message = comm.getMessage();
                 //System.out.println(message);
@@ -51,7 +52,7 @@ public class Game {
                     e.printStackTrace();
                 }*/
                 //scanner = new NewGUI("ジャンケン");
-                scanner.setVisible(true);
+                //scanner.setVisible(true);
                 char input = scanner.getChar();          //何を出すかを入力
                 if (input != '\n' && input != ' ') {
                     comm.sendMessage(input);
