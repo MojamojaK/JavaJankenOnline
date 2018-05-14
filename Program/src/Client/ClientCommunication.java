@@ -19,7 +19,7 @@ public class ClientCommunication implements Runnable{
 
     private boolean stopped = true;
 
-    ClientCommunication (String args[]) throws IOException{
+    public ClientCommunication (String args[]) throws IOException{
         if (args.length > 0) addr = InetAddress.getByName(args[0]);
         try {
             socket = new Socket(addr, Configuration.PORT);
@@ -49,7 +49,7 @@ public class ClientCommunication implements Runnable{
         }
     }
 
-    void close() {
+    public void close() {
         if (!stopped) {
             stopped = true;
             System.out.println("Server Connection Closed");

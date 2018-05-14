@@ -2,25 +2,22 @@ package Client;
 
 import Utility.*;
 import java.io.*;
-import java.util.Scanner;
 
-public class Game {
+public class GameGUI {
 
     private ClientCommunication comm;
-    private ScannerRunnable scanner;
+    private GUI gameGUI;
 
     private boolean game_start = false;
     private boolean round_start = false;
 
-    private Game (String[] args) throws IOException {
+    private GameGUI (String[] args) throws IOException {
         comm = new ClientCommunication(args);
         comm.sendMessage(Commands.Connect);
-        scanner = new ScannerRunnable(new Scanner(System.in));
+        gameGUI = new GUI("ジャンケン");  //new gameGUI(System.in)
         lobby();
         game();
         comm.close();
-        scanner.stop();
-        scanner.close();
     }
 
     private void lobby () {
@@ -29,6 +26,7 @@ public class Game {
         System.out.println("Press \"S\" to start game");
         System.out.println("Minimum Required Players: 2");
         while(!game_start && !comm.closed()) {
+            gameGUI.setVisible(true);
             if (comm.inboxSize() > 0) {
                 char message = comm.getMessage();
                 //System.out.println(message);
@@ -40,8 +38,16 @@ public class Game {
                     System.out.println("Unknown Command Received: " + message);
                 }
             }
-            if (scanner.inboxSize() > 0){
-                char input = scanner.getChar();          //何を出すかを入力
+            if (gameGUI.inboxSize() > 0){
+                /*try {
+                    frame = new NewGUI2("ジャンケン");
+                    frame.setVisible(true);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }*/
+                //gameGUI = new GUI("ジャンケン");
+                //gameGUI.setVisible(true);
+                char input = gameGUI.getChar();          //何を出すかを入力
                 if (input != '\n' && input != ' ') {
                     comm.sendMessage(input);
                 }
@@ -86,15 +92,15 @@ public class Game {
                         round_start = true;
                     }
                 }
-            } else if (scanner.inboxSize() > 0){
-                char input = (char)scanner.getChar();
+            } else if (gameGUI.inboxSize() > 0){
+                char input = (char)gameGUI.getChar();
                 comm.sendMessage(input);
             }
         }
     }
 
     public static void main(String[] args) throws IOException{
-        Game game = new Game(args);
+        GameGUI game = new GameGUI(args);
     }
 }
 
