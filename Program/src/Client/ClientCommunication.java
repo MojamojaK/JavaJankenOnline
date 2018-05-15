@@ -23,6 +23,7 @@ public class ClientCommunication implements Runnable{
         if (args.length > 0) addr = InetAddress.getByName(args[0]);
         try {
             socket = new Socket(addr, Configuration.PORT);
+            socket.setSoTimeout(100);
             System.out.println("Client Communication: ADDR: " + addr + ":" + Configuration.PORT);
             this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             this.out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
@@ -35,29 +36,32 @@ public class ClientCommunication implements Runnable{
 
     public void run() {
         while (!stopped) {
+            boolean retry = true;
             try {
-                int d = in.read();
-                if (d == -1) {
-                    close();
-                } else {
-                    appendInbox((char)d);
+                while (retry) {
+                    try {
+                        int d = in.read();
+                        retry = false;
+                        if (d == -1) {
+                            close();
+                        } else {
+                            appendInbox((char) d);
+                        }
+                    } catch (SocketTimeoutException e){}
                 }
             } catch (IOException e) {
                 close();
-                e.printStackTrace();
             }
         }
     }
 
     public void close() {
         if (!stopped) {
-            stopped = true;
-            System.out.println("Server Connection Closed");
             try {
+                stopped = true;
+                System.out.println("Server Connection Closed");
                 socket.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            } catch (IOException e) {}
         }
     }
 
@@ -83,7 +87,7 @@ public class ClientCommunication implements Runnable{
         }
     }
 
-    boolean closed() {
-        return stopped;
+    boolean opened() {
+        return !stopped;
     }
 }

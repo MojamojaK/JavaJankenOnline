@@ -7,7 +7,8 @@ public class Commands {
     public final static char Disconnect = 'D';  // 接続が途切れたときにクライアントやサーバーが受け取る
     public final static char Game = 'G';        // 1ラウンドが開始されるときにサーバーからクライアントへ送られる
     public final static char Error = 'E';       // エラーが発生したときに送り合う
-    public final static char Finish = 'F';
+    public final static char Finish = 'F';      // ゲーム終了(負け)
+    public final static char Champion = 'H';    // ゲーム終了(勝ち)
 
     // Game Commands
     public final static char Rock = 'g';
@@ -18,8 +19,6 @@ public class Commands {
     public final static char Win = 'w';
     public final static char Lose = 'l';
     public final static char Draw = 'd';
-
-    public final static char Champion = 'c';
 
     public final static char[] Hands = {Rock, Paper, Scissors};
     public static boolean isHand(char c) {

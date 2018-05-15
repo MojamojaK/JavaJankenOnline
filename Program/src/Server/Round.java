@@ -42,12 +42,13 @@ class Round {
         while (Round.playing) {
             if (comm.inboxSize() > 0) {
                 Message m = comm.getMessage();
+                if (!this.players.containsKey(m.id)) continue;
                 System.out.println("Round got message: #" + m.id + ": " + m.message);
                 if (Commands.isHand(m.message)) {
                     if (this.players.get(m.id).setHand(m.message)) {
-                        if (m.message == Commands.Rock)             g++;
-                        else if (m.message == Commands.Scissors)    c++;
-                        else if (m.message == Commands.Paper)       p++;
+                        if (m.message == Commands.Rock) g++;
+                        else if (m.message == Commands.Scissors) c++;
+                        else if (m.message == Commands.Paper) p++;
                     }
                 } else if (m.message == Commands.Connect) {                             // プレイ中に接続されたら
                     System.out.println("Established Connection with Client #" + m.id);
@@ -64,6 +65,10 @@ class Round {
                             else if (player_hand == Commands.Paper) p--;
                         }
                         this.players.remove(m.id);
+                    }
+                    if (this.players.size() < 2) {
+                        Round.playing = false;
+                        System.out.println("Round Canceled");
                     }
                 } else {
                     System.out.println("Unknown Command Received : " + m.message);

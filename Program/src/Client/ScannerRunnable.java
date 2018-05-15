@@ -1,27 +1,31 @@
 package Client;
 
+import java.io.*;
 import java.util.*;
 
 public class ScannerRunnable implements Runnable {
 
-    public Scanner sc;
+    public BufferedReader reader;
     private boolean stopped = false;
     public LinkedList<Character> inbox = new LinkedList<>();
 
-    public ScannerRunnable (Scanner sc) {
-        this.sc = sc;
+    public ScannerRunnable (InputStream inputStream) {
+        this.reader = new BufferedReader(new InputStreamReader(inputStream));
         new Thread(this).start();
     }
 
     public void run () {
         while (!stopped) {
-            char c = sc.next().charAt(0);
-            addChar(c);
+            try {
+                if (this.reader.ready()) {
+                    char c = (char) this.reader.read();
+                    addChar(c);
+                }
+            } catch (IOException e) {}
+
             try {
                 Thread.sleep(100);
-            } catch (InterruptedException e){
-                e.printStackTrace();
-            }
+            } catch (InterruptedException e) {}
         }
     }
 
@@ -42,6 +46,8 @@ public class ScannerRunnable implements Runnable {
     }
 
     public void close() {
-        this.sc.close();
+        try {
+            this.reader.close();
+        } catch (IOException e) {}
     }
 }

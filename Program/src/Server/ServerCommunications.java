@@ -22,19 +22,26 @@ public class ServerCommunications implements Runnable {
         new Thread(this).start();
     }
 
-    public void run() {
+    public void run(){
         System.out.println("ServerCommunications Thread Started");
         while (!stopped) {
             try {
-                Socket socket = this.serverSocket.accept();
-                SocketIO socket_io = new SocketIO(this, socket);
-                try {
-                    cs_rwl.writeLock();
-                    System.out.println("Establishing New Connection " + socket_io.getId());
-                    this.clientSockets.put(socket_io.getId(), socket_io);
-                    cs_rwl.writeUnlock();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                boolean retry = true;
+                while (retry){
+                    try {
+                        if (this.serverSocket.isClosed()) break;
+                        Socket socket = this.serverSocket.accept();
+                        SocketIO socket_io = new SocketIO(this, socket);
+                        try {
+                            cs_rwl.writeLock();
+                            System.out.println("Establishing New Connection " + socket_io.getId());
+                            this.clientSockets.put(socket_io.getId(), socket_io);
+                            cs_rwl.writeUnlock();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        retry = false;
+                    } catch (SocketTimeoutException e) {}
                 }
             } catch (IOException e) {
                 if (stopped) break;
@@ -47,6 +54,7 @@ public class ServerCommunications implements Runnable {
         try {
             this.stopped = false;
             this.serverSocket = new ServerSocket(Configuration.PORT);
+            this.serverSocket.setSoTimeout(100);
             System.out.println("Server Started At Address: " + InetAddress.getLocalHost());
         } catch (IOException e) {
             this.stopped = true;
@@ -57,19 +65,27 @@ public class ServerCommunications implements Runnable {
     void stop() {
         this.stopped = true;
         try {
-            try {
-                cs_rwl.readLock();
-                for (Map.Entry<Integer, SocketIO> entry : clientSockets.entrySet()) {
-                    entry.getValue().close();
-                }
-                cs_rwl.readUnlock();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            this.cs_rwl.readLock();
+            for (SocketIO socketIO: clientSockets.values()) {
+                socketIO.close();
             }
+            this.cs_rwl.readUnlock();
             this.serverSocket.close();
+            this.cs_rwl.writeLock();
+            this.clientSockets.clear();
+            this.cs_rwl.writeUnlock();
+            System.out.println("Server Socket Closed");
         } catch (IOException e) {
             throw new RuntimeException("Error Closing Server", e);
-        }
+        } catch (InterruptedException e){}
+    }
+
+    void removeSocket(int id) {
+        try {
+            this.cs_rwl.writeLock();
+            this.clientSockets.remove(id);
+            this.cs_rwl.writeUnlock();
+        } catch (InterruptedException e){}
     }
 
     void appendInbox(Message m) {

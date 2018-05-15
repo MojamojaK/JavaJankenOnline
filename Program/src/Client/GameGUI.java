@@ -25,7 +25,7 @@ public class GameGUI {
         System.out.println("Welcome to Java Janken Online");
         System.out.println("Press \"S\" to start game");
         System.out.println("Minimum Required Players: 2");
-        while(!game_start && !comm.closed()) {
+        while(!game_start && comm.opened()) {
             gameGUI.setVisible(true);
             if (comm.inboxSize() > 0) {
                 char message = comm.getMessage();
@@ -62,27 +62,19 @@ public class GameGUI {
 
     private void game () {
         System.out.println("Starting Game");
-        while (game_start && !comm.closed()) {
+        while (game_start && comm.opened()) {
             if (comm.inboxSize() > 0) {
                 char message = comm.getMessage();
                 if (round_start) {
-                    if (message == 'l') {
+                    if (message == Commands.Lose) {
                         System.out.println("You lose");      //loseが送られてきたら終わり
                         round_start = false;
-                    } else if (message == 'w') {
+                    } else if (message == Commands.Win) {
                         System.out.println("You win");
                         round_start = false;
-                    } else if (message == 'd') {
+                    } else if (message == Commands.Draw) {
                         System.out.println("Draw");
                         round_start = false;
-                    } else if (message == 'c') {
-                        System.out.println("Game Over. You're the winner!");
-                        round_start = false;
-                        game_start = false;
-                    } else if (message == 'f') {
-                        System.out.println("Game Over. You lose!");
-                        round_start = false;
-                        game_start = false;
                     } else {
                         System.out.println("Unknown Command Received : " + message);
                     }
@@ -90,6 +82,12 @@ public class GameGUI {
                     if (message == Commands.Game) {
                         System.out.println("New Game (\'g\'=\"グー\", \'c\'=\"チョキ\", \'p\'=\"パー\")");
                         round_start = true;
+                    } else if (message == Commands.Champion) {
+                        System.out.println("Game Over. You're the winner!");
+                        game_start = false;
+                    } else if (message == Commands.Finish) {
+                        System.out.println("Game Over. You lose!");
+                        game_start = false;
                     }
                 }
             } else if (gameGUI.inboxSize() > 0){
