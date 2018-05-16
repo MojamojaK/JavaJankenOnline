@@ -85,9 +85,11 @@ public class GameGUI {
                     } else if (message == Commands.Champion) {
                         System.out.println("Game Over. You're the winner!");
                         game_start = false;
+                        System.exit(0);
                     } else if (message == Commands.Finish) {
                         System.out.println("Game Over. You lose!");
                         game_start = false;
+                        System.exit(0);
                     }
                 }
             } else if (gameGUI.inboxSize() > 0){
