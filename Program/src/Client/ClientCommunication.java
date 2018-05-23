@@ -7,7 +7,7 @@ import java.io.*;
 import java.net.*;
 import java.util.LinkedList;
 
-public class ClientCommunication implements Runnable{
+public class ClientCommunication implements Runnable {
 
     private InetAddress addr = InetAddress.getByName("localhost");
     private Socket socket;
@@ -19,7 +19,7 @@ public class ClientCommunication implements Runnable{
 
     private boolean stopped = true;
 
-    public ClientCommunication (String args[]) throws IOException{
+    public ClientCommunication (String args[]) throws IOException {
         if (args.length > 0) addr = InetAddress.getByName(args[0]);
         try {
             socket = new Socket(addr, Configuration.PORT);
