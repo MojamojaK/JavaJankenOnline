@@ -67,27 +67,27 @@ public class GameGUI {
                 char message = comm.getMessage();
                 if (round_start) {
                     if (message == Commands.Lose) {
-                        System.out.println("You lose");      //loseが送られてきたら終わり
+                        System.out.println("You lose 負け");      //loseが送られてきたら終わり
                         round_start = false;
                     } else if (message == Commands.Win) {
-                        System.out.println("You win");
+                        System.out.println("You win 勝ち");
                         round_start = false;
                     } else if (message == Commands.Draw) {
-                        System.out.println("Draw");
+                        System.out.println("Draw 引き分け");
                         round_start = false;
                     } else {
                         System.out.println("Unknown Command Received : " + message);
                     }
                 } else {
                     if (message == Commands.Game) {
-                        System.out.println("New Game (\'g\'=\"グー\", \'c\'=\"チョキ\", \'p\'=\"パー\")");
+                        System.out.println("New Game. Select A Hand. 手を選択してください!");
                         round_start = true;
                     } else if (message == Commands.Champion) {
-                        System.out.println("Game Over. You're the winner!");
+                        System.out.println("Game Over. You're the winner! おめでとうございます! あなたの勝ちです!");
                         game_start = false;
                         System.exit(0);
                     } else if (message == Commands.Finish) {
-                        System.out.println("Game Over. You lose!");
+                        System.out.println("Game Over. You lose! あなたの負けです!");
                         game_start = false;
                         System.exit(0);
                     }
